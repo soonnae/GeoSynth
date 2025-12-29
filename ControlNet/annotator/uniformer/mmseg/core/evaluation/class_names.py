@@ -431,9 +431,15 @@ def get_classes(dataset):
         for alias in aliases:
             alias2name[alias] = name
 
+    class_functions = {
+        "cityscapes": cityscapes_classes,
+        "ade": ade_classes,
+        "voc": voc_classes,
+    }
+
     if mmcv.is_str(dataset):
         if dataset in alias2name:
-            labels = eval(alias2name[dataset] + "_classes()")
+            labels = class_functions[alias2name[dataset]]()
         else:
             raise ValueError(f"Unrecognized dataset: {dataset}")
     else:
@@ -448,9 +454,15 @@ def get_palette(dataset):
         for alias in aliases:
             alias2name[alias] = name
 
+    palette_functions = {
+        "cityscapes": cityscapes_palette,
+        "ade": ade_palette,
+        "voc": voc_palette,
+    }
+
     if mmcv.is_str(dataset):
         if dataset in alias2name:
-            labels = eval(alias2name[dataset] + "_palette()")
+            labels = palette_functions[alias2name[dataset]]()
         else:
             raise ValueError(f"Unrecognized dataset: {dataset}")
     else:

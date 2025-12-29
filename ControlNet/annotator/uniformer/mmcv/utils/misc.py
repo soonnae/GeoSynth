@@ -250,7 +250,9 @@ def _check_py_package(package):
 
 
 def _check_executable(cmd):
-    if subprocess.call(f"which {cmd}", shell=True) != 0:
+    try:
+        subprocess.call(["which", cmd], shell=False)
+    except FileNotFoundError:
         return False
     else:
         return True

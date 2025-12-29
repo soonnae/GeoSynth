@@ -168,7 +168,7 @@ def collect_results_gpu(result_part, size):
     rank, world_size = get_dist_info()
     # dump result part to tensor with pickle
     part_tensor = torch.tensor(
-        bytearray(pickle.dumps(result_part)), dtype=torch.uint8, device="cuda"
+        bytearray(pickle.dumps(result_part)), dtype=torch.uint8, device="cuda"  # @BUG_HERE_START
     )
     # gather all result part tensor shape
     shape_tensor = torch.tensor(part_tensor.shape, device="cuda")
@@ -185,7 +185,7 @@ def collect_results_gpu(result_part, size):
     if rank == 0:
         part_list = []
         for recv, shape in zip(part_recv_list, shape_list):
-            part_result = pickle.loads(recv[: shape[0]].cpu().numpy().tobytes())
+            part_result = pickle.loads(recv[: shape[0]].cpu().numpy().tobytes())  # @BUG_HERE_END
             # When data is severely insufficient, an empty part_result
             # on a certain gpu could makes the overall outputs empty.
             if part_result:
