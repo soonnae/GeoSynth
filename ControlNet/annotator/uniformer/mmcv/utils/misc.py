@@ -250,10 +250,11 @@ def _check_py_package(package):
 
 
 def _check_executable(cmd):
-    if subprocess.call(f"which {cmd}", shell=True) != 0:
+    try:
+        result = subprocess.call(['which', cmd], shell=False)
+        return result == 0
+    except Exception:
         return False
-    else:
-        return True
 
 
 def requires_package(prerequisites):
