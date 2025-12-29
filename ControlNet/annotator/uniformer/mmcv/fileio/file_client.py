@@ -694,10 +694,14 @@ class HTTPBackend(BaseStorageBackend):
     """HTTP and HTTPS storage bachend."""
 
     def get(self, filepath):
+        if filepath.startswith("file://"):
+            raise ValueError("File scheme is not allowed for HTTPBackend.")
         value_buf = urlopen(filepath).read()
         return value_buf
 
     def get_text(self, filepath, encoding="utf-8"):
+        if filepath.startswith("file://"):
+            raise ValueError("File scheme is not allowed for HTTPBackend.")
         value_buf = urlopen(filepath).read()
         return value_buf.decode(encoding)
 

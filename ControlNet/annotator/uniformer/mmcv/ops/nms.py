@@ -310,7 +310,17 @@ def batched_nms(boxes, scores, idxs, nms_cfg, class_agnostic=False):
         boxes_for_nms = boxes + offsets[:, None]
 
     nms_type = nms_cfg_.pop("type", "nms")
-    nms_op = eval(nms_type)
+    nms_op_dict = {
+        "nms": nms,
+        "soft_nms": soft_nms,
+        "batched_nms": batched_nms,
+        "nms_match": nms_match,
+        "nms_rotated": nms_rotated,
+    }
+    nms_op = nms_op_dict.get(nms_type)
+
+    if nms_op is None:
+        raise ValueError(f"Unsupported NMS type: {nms_type}")
 
     split_thr = nms_cfg_.pop("split_thr", 10000)
     # Won't split to multiple nms nodes when exporting to onnx

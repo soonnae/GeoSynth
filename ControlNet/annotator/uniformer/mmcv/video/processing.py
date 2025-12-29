@@ -47,10 +47,10 @@ def convert_video(in_file, out_file, print_cmd=False, pre_options="", **kwargs):
             options.append(f"-loglevel {v}")
         else:
             options.append(f"-{k} {v}")
-    cmd = f'ffmpeg -y {pre_options} -i {in_file} {" ".join(options)} ' f"{out_file}"
+    cmd = ["ffmpeg", "-y"] + pre_options.split() + ["-i", in_file] + options + [out_file]
     if print_cmd:
-        print(cmd)
-    subprocess.call(cmd, shell=True)
+        print(" ".join(cmd))
+    subprocess.call(cmd, shell=False)
 
 
 @requires_executable("ffmpeg")

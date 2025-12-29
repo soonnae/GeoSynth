@@ -199,10 +199,13 @@ def collect_results_cpu(result_part, size, tmpdir=None):
 
 def collect_results_gpu(result_part, size):
     """Collect results with GPU."""
+    import json
+
     rank, world_size = get_dist_info()
-    # dump result part to tensor with pickle
+    # dump result part to tensor with json
+    part_json = json.dumps(result_part).encode('utf-8')
     part_tensor = torch.tensor(
-        bytearray(pickle.dumps(result_part)), dtype=torch.uint8, device="cuda"
+        bytearray(part_json), dtype=torch.uint8, device="cuda"
     )
     # gather all result part tensor shape
     shape_tensor = torch.tensor(part_tensor.shape, device="cuda")
@@ -219,7 +222,8 @@ def collect_results_gpu(result_part, size):
     if rank == 0:
         part_list = []
         for recv, shape in zip(part_recv_list, shape_list):
-            part_list.append(pickle.loads(recv[: shape[0]].cpu().numpy().tobytes()))
+            part_json = recv[: shape[0]].cpu().numpy().tobytes().decode('utf-8')
+            part_list.append(json.loads(part_json))
         # sort the results
         ordered_results = []
         for res in zip(*part_list):
